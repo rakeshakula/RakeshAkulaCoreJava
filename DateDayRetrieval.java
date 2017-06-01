@@ -18,93 +18,93 @@ public class DateDayRetrieval {
 	Scanner sc = new Scanner(System.in);
 	String enteredDate;
 	String monthName;
+	int dateValue;
 	int monthValue;
+	int yearValue;
+	
 	int[] months30 = {04,06,9,11};
 	int[] months31 = {01,03,05,07,8,10};
 	int[] months;
-	int oddDays;
+	int monthOddDays;
+	
 	boolean valueAvailable;
 	public DateDayRetrieval(){
 		dateEntryAndValidation();
 		
 	}
-	public void dateEntryAndValidation(){
-		System.out.println("Please enter the date in DDMMYY format");
+	public void dateEntryAndValidation(){ // Validates the date entered
+		System.out.println("Please enter the date in DDMMYYYY format");
 		enteredDate = sc.next();
-		int dateValue = Integer.parseInt(enteredDate.substring(0,2));
-		monthValue = Integer.parseInt(enteredDate.substring(2,4));
-		int yearValue = Integer.parseInt(enteredDate.substring(4,6));
-		System.out.println(dateValue+" "+monthValue+" "+yearValue);
-		monthName();
-		if(!monthAvailable(monthValue)){
-			oddDays= monthValue/7;
-		}
-		
-		if((null!=enteredDate)||("".equalsIgnoreCase(enteredDate)||(enteredDate.length()!=6))){
+		dateValue = Integer.parseInt(enteredDate.substring(0,2)); //Extracting the date from the Entered String 
+		monthValue = Integer.parseInt(enteredDate.substring(2,4)); //Extracting the month from the Entered String
+		yearValue = Integer.parseInt(enteredDate.substring(4,8)); //Extracting the year from the Entered String 
+		System.out.println(dateValue+"-"+monthValue+"-"+yearValue); //printing the individual values
+		if((null==enteredDate)||("".equalsIgnoreCase(enteredDate))||(enteredDate.length()!=8)){ //Validating the length of date
 			System.out.println("Please re-enter the digits");
 			dateEntryAndValidation();
 		}
-		else if(dateValue<1 || dateValue>31){
-			System.out.println("Entered Date should be between 1 and 31");
-			dateEntryAndValidation();
+		if(!monthAvailable(monthValue)){ //If the month is not of 30 or 31 days then it is February
+			monthOddDays= monthValue/7;
 		}
 		
-		else if(yearValue>2017){
-			System.out.println("Please enter a valid year");
+		if(dateValue<1 || dateValue>31){
+			System.out.println("Entered Date should be between 1 and 31");
 			dateEntryAndValidation();
 		}
 		else{
 		dayFinder(enteredDate);
 		}
 	}
-	public void monthName(){
-		switch (monthValue) {
+	public int monthName(int value){
+		switch (value) {
+		case 0:
+			monthOddDays = 0;
+			break;
 		case 01:
-			monthName = "January";
-			oddDays = 3;
+			monthOddDays = 3;
 			break;
 		case 02:
-			monthName = "February";
 			break;
 		case 03:
-			monthName = "March";
+			monthOddDays = 6;
 			break;
 		case 04:
-			monthName = "April";
+			monthOddDays = 8;
 			break;
 		case 05:
-			monthName = "May";
+			monthOddDays = 11;
 			break;
 		case 06:
-			monthName = "June";
+			monthOddDays = 13;
 			break;
 		case 07:
-			monthName = "July";
+			monthOddDays = 16;
 			break;
 		case 8:
-			monthName = "August";
+			monthOddDays = 19;
 			break;
 		case 9:
-			monthName = "September";
+			monthOddDays = 21;
 			break;
 		case 10:
-			monthName = "October";
+			monthOddDays = 24;
 			break;
 		case 11:
-			monthName = "November";
+			monthOddDays = 26;
 			break;
 		case 12:
-			monthName = "December";
+			monthOddDays = 28;
 			break;
 
 		default:
 			System.out.println("Please enter a valid month");
-			monthName();
+			monthName(value);
 			break;
 		}
+		return monthOddDays;
 	}
 	public boolean monthAvailable(int value){
-		if(monthValue!=0){
+		if(value!=0){
 			months = new int[months30.length+months31.length];
 			int i;
 			for(i=0;i<months30.length;i++)
@@ -112,11 +112,10 @@ public class DateDayRetrieval {
 			for (int j = 0; j < months31.length; j++) 
 				months[i++]=months31[j];
 			for(int k=0;k<months.length;k++){
-				if(monthValue==months[k]){
+				if(value==months[k]){
 					valueAvailable = true;
 				}
-				else 
-					valueAvailable = false;
+				
 			}
 		}
 		else 
@@ -124,7 +123,76 @@ public class DateDayRetrieval {
 		return valueAvailable;
 	}
 	public void dayFinder(String date){
+		int finalOddDays = (yearOddDay(yearValue-1) + monthOddDay(monthValue-1) + daysOddDay(dateValue))%7;
+			finalOddDays+=1;
+		switch(finalOddDays)
+		{
+		case 0:
+			System.out.println("The date "+enteredDate+" falls on Sunday");
+			break;
+		case 1:
+			System.out.println("The date "+enteredDate+" falls on Monday");
+			break;
+		case 2:
+			System.out.println("The date "+enteredDate+" falls on Tuesday");
+			break;
+		case 3:
+			System.out.println("The date "+enteredDate+" falls on Wednesday");
+			break;
+		case 4:
+			System.out.println("The date "+enteredDate+" falls on Thursday");
+			break;
+		case 5:
+			System.out.println("The date "+enteredDate+" falls on Friday");
+			break;
+		case 6:
+			System.out.println("The date "+enteredDate+" falls on Saturday");
+			break;
+		default : 
+			System.out.println("Error in program. Loading again...");
+			new DateDayRetrieval();
+			break;
+
+		}
+	}
+	public int daysOddDay(int day) {
+		// TODO Auto-generated method stub
+		return day%7;
+	}
+	public int monthOddDay(int month) {
+		// TODO Auto-generated method stub
 		
+		return monthName(month);
+	}
+	public int yearOddDay(int year) {
+		// TODO Auto-generated method stub
+		
+		int yearOddDays = 0 ;
+		year = year%400;
+		if(year>300){
+			int leapyears = (year - 300)/4;
+			int normalYears = year - 300 - leapyears;
+			yearOddDays = (1 + (leapyears*2)+normalYears)%7;
+		}
+		else if (year>200){
+			int leapyears = (year - 200)/4;
+			int normalYears = year - 200 - leapyears;
+			yearOddDays = (3 + (leapyears*2)+normalYears)%7;
+		}
+		else if (year>100){
+			int leapyears = (year - 100)/4;
+			int normalYears = year - 100 - leapyears;
+			yearOddDays = (5 + (leapyears*2)+normalYears)%7;
+		}
+		else {
+
+			int leapyears = year/4;
+			int normalYears = year - leapyears;
+			yearOddDays = ((leapyears*2)+normalYears)%7;
+		
+		}
+		
+		return yearOddDays;
 	}
 	public static void main(String[] args) {
 		new DateDayRetrieval();
